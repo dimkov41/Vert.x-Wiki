@@ -5,26 +5,28 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
+import io.vertx.starter.database.services.WikiDatabaseService;
 
 import java.util.Date;
 
 public class HttpServerVerticle extends AbstractVerticle {
   private static final String EMPTY_PAGE_MARKDOWN = "# A new page\n" + "\n" + "Feel-free to write in Markdown!\n";
   private static final String CONFIG_HTTP_SERVER_PORT = "http.server.port";
-  private static final String CONFIG_WIKIDB_QUEUE = "wikidb.queue";
+  private static final String DB_SERVICE_ADDRESS = "database-service-address";
 
   private String wikiDbQueue = "wikidb.queue";
   private FreeMarkerTemplateEngine templateEngine;
+  private WikiDatabaseService dbService;
 
   @Override
   public void start(Promise<Void> promise) throws Exception {
-    System.out.println("Ivan config ==============> " + config().getString("ivan"));
-    wikiDbQueue = config().getString(CONFIG_WIKIDB_QUEUE, wikiDbQueue);
+    dbService = WikiDatabaseService.createProxy(vertx, DB_SERVICE_ADDRESS);
 
     HttpServer httpServer = vertx.createHttpServer();
     Router router = Router.router(vertx);
@@ -41,7 +43,6 @@ public class HttpServerVerticle extends AbstractVerticle {
     httpServer.requestHandler(router).listen(serverPort, result -> {
       if (result.succeeded()) {
         System.out.println(String.format("Server listening on port {%d}", result.result().actualPort()));
-        System.out.println(result.result());
         promise.complete();
       } else {
         promise.fail(result.cause());
@@ -50,14 +51,11 @@ public class HttpServerVerticle extends AbstractVerticle {
   }
 
   private void homeHandler(RoutingContext routingContext) {
-    DeliveryOptions deliveryOptions = new DeliveryOptions()
-      .addHeader("action", "all-pages");
-
-    vertx.eventBus().request(wikiDbQueue, new JsonObject(), deliveryOptions, result -> {
+    dbService.fetchAllPages(result -> {
       if (result.succeeded()) {
-        JsonObject body = (JsonObject) result.result().body();
+        JsonArray pages = result.result();
         routingContext.put("title", "Wiki home");
-        routingContext.put("pages", body.getJsonArray("pages").getList());
+        routingContext.put("pages", pages.getList());
         templateEngine.render(routingContext.data(), "templates/index.ftl", ar -> {
           if (ar.succeeded()) {
             routingContext.response().putHeader("Content-type", "text/html");
@@ -67,8 +65,6 @@ public class HttpServerVerticle extends AbstractVerticle {
             System.out.println("Failed to render index.ftl");
           }
         });
-
-
       } else {
         routingContext.fail(result.cause());
       }
