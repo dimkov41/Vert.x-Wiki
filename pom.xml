@@ -78,6 +78,14 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/generated</directory>
+      </resource>
+    </resources>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -92,9 +100,6 @@
               <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
             </annotationProcessors>
             <generatedSourcesDirectory>${project.basedir}/src/main/generated</generatedSourcesDirectory>
-            <compilerArgs>
-              <arg>-AoutputDirectory=${project.basedir}/src/main</arg>
-            </compilerArgs>
 
           </configuration>
         </plugin>
