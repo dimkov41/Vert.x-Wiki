@@ -69,6 +69,12 @@
       <artifactId>vertx-service-proxy</artifactId>
       <version>3.8.3</version>
     </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <version>3.8.3</version>
+      <classifier>processor</classifier>
+    </dependency>
   </dependencies>
 
   <build>
@@ -80,6 +86,16 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
+            <useIncrementalCompilation>false</useIncrementalCompilation>
+
+            <annotationProcessors>
+              <annotationProcessor>io.vertx.codegen.CodeGenProcessor</annotationProcessor>
+            </annotationProcessors>
+            <generatedSourcesDirectory>${project.basedir}/src/main/generated</generatedSourcesDirectory>
+            <compilerArgs>
+              <arg>-AoutputDirectory=${project.basedir}/src/main</arg>
+            </compilerArgs>
+
           </configuration>
         </plugin>
       </plugins>
