@@ -1,4 +1,4 @@
-= Vert.x Maven Starter
+= Vert.x Maven Wiki
 
 This project is a template to start your own Vert.x project using Apache Maven.
 
@@ -42,7 +42,6 @@ The project contains:
 
 * a `pom.xml` file
 * a _main_ verticle file (src/main/java/io/vertx/starter/MainVerticle.java)
-* an unit test (src/main/test/io/vertx/starter/MainVerticleTest.java)
 
 == Start to hack
 
