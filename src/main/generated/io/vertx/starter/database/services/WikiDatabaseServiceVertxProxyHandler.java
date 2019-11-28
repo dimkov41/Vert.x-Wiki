@@ -42,9 +42,9 @@ import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import io.vertx.serviceproxy.HelperUtils;
 
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.starter.database.services.WikiDatabaseService;
 /*
   Generated Proxy code - DO NOT EDIT
   @author Roger the Robot
@@ -117,6 +117,21 @@ public class WikiDatabaseServiceVertxProxyHandler extends ProxyHandler {
       switch (action) {
         case "fetchAllPages": {
           service.fetchAllPages(HelperUtils.createHandler(msg));
+          break;
+        }
+        case "fetchPage": {
+          service.fetchPage((io.vertx.core.json.JsonObject)json.getValue("request"),
+                        HelperUtils.createHandler(msg));
+          break;
+        }
+        case "savePage": {
+          service.savePage((io.vertx.core.json.JsonObject)json.getValue("request"),
+                        HelperUtils.createHandler(msg));
+          break;
+        }
+        case "deletePage": {
+          service.deletePage((io.vertx.core.json.JsonObject)json.getValue("request"),
+                        HelperUtils.createHandler(msg));
           break;
         }
         default: throw new IllegalStateException("Invalid action: " + action);

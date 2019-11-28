@@ -1,6 +1,5 @@
 package io.vertx.starter.database.services;
 
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.codegen.annotations.VertxGen;
@@ -8,6 +7,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.starter.database.enums.SqlQuery;
 
@@ -26,7 +26,11 @@ public interface WikiDatabaseService {
     return new WikiDatabaseServiceVertxEBProxy(vertx, address);
   }
 
-  @Fluent
-  @SuppressWarnings("all")
-  WikiDatabaseService fetchAllPages(Handler<AsyncResult<JsonArray>> resultHandler);
+  void fetchAllPages(Handler<AsyncResult<JsonArray>> resultHandler);
+
+  void fetchPage(JsonObject request, Handler<AsyncResult<JsonArray>> resultHandler);
+
+  void savePage(JsonObject request, Handler<AsyncResult<JsonArray>> resultHandler);
+
+  void deletePage(JsonObject request, Handler<AsyncResult<JsonArray>> resultHandler);
 }
