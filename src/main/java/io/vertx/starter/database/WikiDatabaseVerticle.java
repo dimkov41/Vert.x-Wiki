@@ -63,35 +63,6 @@ public class WikiDatabaseVerticle extends AbstractVerticle {
       }
   }
 
-  private void onMessage(Message<JsonObject> message) {
-    if (!message.headers().contains("action")) {
-      System.err.println(String.format("No action header specified for message with headers %s and body %s", message.headers(), message.body().encodePrettily()));
-      message.fail(DBErrorCodes.NO_ACTION_SPECIFIED.ordinal(), "No action header specified");
-      return;
-    }
-
-    String action = message.headers().get("action");
-    switch (action) {
-      case "all-pages":
-        fetchAllPages(message);
-        break;
-      case "get-page":
-        fetchPage(message);
-        break;
-      case "create-page":
-        createPage(message);
-        break;
-      case "save-page":
-        savePage(message);
-        break;
-      case "delete-page":
-        deletePage(message);
-        break;
-      default:
-        message.fail(DBErrorCodes.BAD_ACTION.ordinal(), "Bad action: " + action);
-    }
-  }
-
   private void fetchAllPages(Message<JsonObject> message) {
     dbClient.query(sqlQueries.get(SqlQuery.ALL_PAGES), res -> {
       if (res.succeeded()) {
