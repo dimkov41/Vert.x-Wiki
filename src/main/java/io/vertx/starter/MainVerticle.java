@@ -2,12 +2,7 @@ package io.vertx.starter;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.jdbc.JDBCClient;
-import io.vertx.ext.sql.SQLConnection;
-import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
 
 /**
  * Each phase can fail (e.g., the HTTP server TCP port is already being used),
@@ -27,6 +22,7 @@ public class MainVerticle extends AbstractVerticle {
       return httpVerticleDeployment.future();
     }).setHandler(result -> {
       if (result.succeeded()) {
+        System.out.println("~~~~~~~~~~All verticles deployed~~~~~~~~~");
         promise.complete();
       } else {
         promise.fail(result.cause());
