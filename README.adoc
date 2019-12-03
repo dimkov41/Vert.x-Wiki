@@ -1,4 +1,4 @@
-= Vert.x Maven Starter
+= Vert.x Maven Wiki
 
 Simple wiki using Vert.x technology with Java language.
 
@@ -30,7 +30,6 @@ The project contains:
 
 * a `pom.xml` file
 * a _main_ verticle file (src/main/java/io/vertx/starter/MainVerticle.java)
-
 == Building the project
 
 To build the project, just use:
