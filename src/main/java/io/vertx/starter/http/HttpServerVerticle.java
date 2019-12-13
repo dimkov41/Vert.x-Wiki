@@ -13,14 +13,16 @@ import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
 import io.vertx.serviceproxy.ServiceProxyBuilder;
 import io.vertx.starter.common.Constants;
 import io.vertx.starter.database.services.WikiDatabaseService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 
 public class HttpServerVerticle extends AbstractVerticle {
+  private static final Logger log = LogManager.getLogger(HttpServerVerticle.class);
   private static final String EMPTY_PAGE_MARKDOWN = "# A new page\n" + "\n" + "Feel-free to write in Markdown!\n";
   private static final String CONFIG_HTTP_SERVER_PORT = "http.server.port";
 
-  private String wikiDbQueue = "wikidb.queue";
   private FreeMarkerTemplateEngine templateEngine;
   private WikiDatabaseService dbService;
 
@@ -45,6 +47,7 @@ public class HttpServerVerticle extends AbstractVerticle {
     httpServer.requestHandler(router).listen(serverPort, result -> {
       if (result.succeeded()) {
         promise.complete();
+        log.info("Server listening on port {}", serverPort);
       } else {
         promise.fail(result.cause());
       }
@@ -63,7 +66,7 @@ public class HttpServerVerticle extends AbstractVerticle {
             context.response().end(ar.result());
           } else {
             context.fail(result.cause());
-            System.out.println("Failed to render index.ftl");
+            log.error("Failed to render index.ftl", result.cause());
           }
         });
       } else {

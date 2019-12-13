@@ -9,11 +9,14 @@ import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.starter.database.enums.SqlQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WikiDatabaseServiceImpl implements WikiDatabaseService {
+  private static final Logger log = LogManager.getLogger(WikiDatabaseService.class);
   private final Map<SqlQuery, String> sqlQueries;
   private final JDBCClient dbClient;
 
@@ -23,14 +26,14 @@ public class WikiDatabaseServiceImpl implements WikiDatabaseService {
 
     dbClient.getConnection(ar -> {
       if (ar.failed()) {
-        System.out.println("Could not open a database connection " + ar.cause());
+        log.error("Could not open a database connection " + ar.cause());
         readyHandler.handle(Future.failedFuture(ar.cause()));
       } else {
         SQLConnection connection = ar.result();
         connection.execute(this.sqlQueries.get(SqlQuery.CREATE_PAGES_TABLE), create -> {
           connection.close();
           if (create.failed()) {
-            System.err.println("Database preparation error " + create.cause());
+            log.error("Database preparation error " + create.cause());
             readyHandler.handle(Future.failedFuture(create.cause()));
           } else {
             readyHandler.handle(Future.succeededFuture(this));
