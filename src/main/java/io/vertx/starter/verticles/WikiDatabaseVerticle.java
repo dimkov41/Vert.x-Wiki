@@ -1,4 +1,4 @@
-package io.vertx.starter.database;
+package io.vertx.starter.verticles;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -7,6 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.serviceproxy.ServiceBinder;
+import io.vertx.starter.database.SqlLoader;
 import io.vertx.starter.database.enums.SqlQuery;
 import io.vertx.starter.database.services.WikiDatabaseService;
 import org.apache.logging.log4j.LogManager;

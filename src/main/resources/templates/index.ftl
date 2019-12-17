@@ -27,6 +27,12 @@
   </#list>
   </div>
 
+<#if rates??>
+  <div class="col-md-12 mt-1">
+    <h2>Current exchange rates:</h2>
+    <p>${rates}</p>
+  </div>
+</#if>
 </div>
 
 <#include "footer.ftl">

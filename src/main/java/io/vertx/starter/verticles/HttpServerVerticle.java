@@ -1,8 +1,10 @@
-package io.vertx.starter.http;
+package io.vertx.starter.verticles;
 
 import com.github.rjeschke.txtmark.Processor;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -13,10 +15,13 @@ import io.vertx.ext.web.templ.freemarker.FreeMarkerTemplateEngine;
 import io.vertx.serviceproxy.ServiceProxyBuilder;
 import io.vertx.starter.common.Constants;
 import io.vertx.starter.database.services.WikiDatabaseService;
+import io.vertx.starter.models.Rates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
+
+import static io.vertx.starter.common.Constants.EXCHANGE_RATE_ADDRESS;
 
 public class HttpServerVerticle extends AbstractVerticle {
   private static final Logger log = LogManager.getLogger(HttpServerVerticle.class);
@@ -25,13 +30,19 @@ public class HttpServerVerticle extends AbstractVerticle {
 
   private FreeMarkerTemplateEngine templateEngine;
   private WikiDatabaseService dbService;
+  private Rates rates;
+
+  @Override
+  public void init(Vertx vertx, Context context) {
+    super.init(vertx, context);
+    ServiceProxyBuilder builder = new ServiceProxyBuilder(vertx).setAddress(Constants.DB_SERVICE_ADDRESS);
+    dbService = builder.build(WikiDatabaseService.class);
+    vertx.eventBus().consumer(EXCHANGE_RATE_ADDRESS, m -> rates = (Rates) m.body());
+  }
 
   @Override
   public void start(Promise<Void> promise) {
     /* build proxy */
-    ServiceProxyBuilder builder = new ServiceProxyBuilder(vertx).setAddress(Constants.DB_SERVICE_ADDRESS);
-    dbService = builder.build(WikiDatabaseService.class);
-
     HttpServer httpServer = vertx.createHttpServer();
     Router router = Router.router(vertx);
     templateEngine = FreeMarkerTemplateEngine.create(vertx);
@@ -60,6 +71,7 @@ public class HttpServerVerticle extends AbstractVerticle {
         JsonArray pages = result.result();
         context.put("title", "Wiki home");
         context.put("pages", pages.getList());
+        context.put("rates", rates);
         templateEngine.render(context.data(), "templates/index.ftl", ar -> {
           if (ar.succeeded()) {
             context.response().putHeader("Content-type", "text/html");

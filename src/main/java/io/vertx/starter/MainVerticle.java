@@ -14,22 +14,20 @@ import org.apache.logging.log4j.Logger;
  */
 public class MainVerticle extends AbstractVerticle {
   private static final Logger log = LogManager.getLogger(MainVerticle.class);
+  private static final String BASE_VERTICLE_DIRECTORY = "io.vertx.starter.verticles.";
 
   @Override
   public void start(Promise<Void> promise) {
     Promise<String> dbVerticleDeployment = Promise.promise();
-    vertx.deployVerticle("io.vertx.starter.database.WikiDatabaseVerticle", dbVerticleDeployment);
+    vertx.deployVerticle(BASE_VERTICLE_DIRECTORY + "WikiDatabaseVerticle", dbVerticleDeployment);
 
     dbVerticleDeployment.future().compose(id -> {
       Promise<String> httpVerticleDeployment = Promise.promise();
-      DeploymentOptions deploymentOptions = new DeploymentOptions()
-        .setInstances(2);
-      vertx.deployVerticle("io.vertx.starter.http.HttpServerVerticle", deploymentOptions, httpVerticleDeployment);
+      vertx.deployVerticle(BASE_VERTICLE_DIRECTORY + "HttpServerVerticle", httpVerticleDeployment);
       return httpVerticleDeployment.future();
     }).compose(id -> {
       Promise<String> backupVerticleDeployment = Promise.promise();
-//      vertx.deployVerticle("io.vertx.starter.http.HttpBackupVerticle", backupVerticleDeployment);
-      backupVerticleDeployment.complete();
+      vertx.deployVerticle(BASE_VERTICLE_DIRECTORY + "ExchangeRateVerticle", backupVerticleDeployment);
       return backupVerticleDeployment.future();
     }).setHandler(result -> {
       if (result.succeeded()) {
