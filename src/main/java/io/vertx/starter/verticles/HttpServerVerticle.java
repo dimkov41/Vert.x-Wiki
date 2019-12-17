@@ -42,7 +42,6 @@ public class HttpServerVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> promise) {
-    /* build proxy */
     HttpServer httpServer = vertx.createHttpServer();
     Router router = Router.router(vertx);
     templateEngine = FreeMarkerTemplateEngine.create(vertx);
